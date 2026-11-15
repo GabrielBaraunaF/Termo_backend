@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package termoduelo;
+
+option java_multiple_files = true;
+option java_package = "com.termoduelo.proto";
+option java_outer_classname = "TermoDueloProto";
+
+
+service TermoDuelo {
+
+  rpc Cadastro (CadastroRequest) returns (CadastroResponse);
+
+  rpc Login (LoginRequest) returns (stream GameResponse);
+
+  rpc EnviarPalpite (EnviarPalpiteRequest) returns (GuessResult);
+
+}
+
+
+
+message CadastroRequest {
+  string nome = 1;
+}
+
+message CadastroResponse {
+  int32 nome = 1; // todo: mudar nome
+}
+
+
+
+message LoginRequest {
+  int32 userId = 1;
+}
+
+message LoginResponse {
+  string status = 1;
+}
+
+
+
+message GameResponse {
+  oneof response {
+    GameStarted game_started = 1;
+    PlayerJoined player_joined = 2;
+    GameFinished game_finished = 3;
+    GuessResult opponent_guess = 4;
+  }
+}
+
+message PlayerJoined {
+  string message = 1;
+}
+
+message GameStarted {
+  int32 game_id = 1;
+  string opponentName = 2;
+  int32 wordSize = 3;
+}
+
+message GameFinished {
+  MatchResult result = 1;
+  string secret_word = 2;
+}
+
+enum MatchResult {
+  MATCH_RESULT_UNSPECIFIED = 0;
+  VITORIA = 1;
+  DERROTA = 2;
+  EMPATE = 3;
+}
+
+
+message EnviarPalpiteRequest {
+  int32 game_id = 1;
+  int32 user_id = 2;
+  string palpite = 3;
+}
+
+message GuessResult {
+  int32 user_id = 1;
+  repeated string values = 2;
+  int32 attempts = 3;
+  bool is_winner = 4;
+  int32 acertos = 5;
+}
